@@ -40,21 +40,21 @@ class Integrator{
                     throw std::runtime_error("Data reading error in file " + filename + "(str " + std::to_string(i) + " )");
         }
 
-        void PrintData() const{
-            std::cout << "\nIntegrator Weights:";
-            for (std::size_t i = 0; i < N; i++)
-                std::cout << "\nNode #" << i << " " << nodes[i] << " --- " << weights[i];
-        }
-
         template<typename Callable>
         Y operator()(Callable&& f, const X& a, const X& b, const X& h){
             X ai = a;
             Y ans = 0;
             while (ai + h < b){
-                ans += subsum(f, ai, ai + h);
+                Y tans = 0;
+                for (std::size_t i = 0; i < N; i++)
+                    tans += weights[i] * f((2 * ai + h) / 2 + h / 2 * nodes[i]);
+                ans += h / 2 * tans;
                 ai += h;
             }
-            ans += subsum(f, ai, b);
+            Y tans = 0;                                                                 // 夏 вέλúķúй бέςῆόщάѫȞӹй ___GOVNOCOD__ 夏
+            for (std::size_t i = 0; i < N; i++)
+                tans += weights[i] * f((b + ai) / 2 + (b - ai) / 2 * nodes[i]);
+            ans += (b - ai) / 2 * tans;
             return ans;
         }
 };
@@ -63,8 +63,8 @@ class Integrator{
 int main(){
     try{
         Integrator<double, double> g("weights.txt");
-        auto f = [](double x) {return std::pow(x, 5) - 2 * std::pow(x, 4) + 3 * std::pow(x, 3) - 4 * std::pow(x, 2) + 5 * x; };
-        std::cout << "\nValue = " << g(f, -2, 2, 0.1s) << '\n';
+        auto f = [](double x) {return std::pow(x, 5) - 2 * std::pow(x, 4) + 3 * std::pow(x, 3) - 4 * std::pow(x, 2) + 5 * x;; };
+        std::cout << "\nValue = " << g(f, -2.0, 2.0, 0.1) << '\n';
     } catch (const std::exception& e){
         std::cerr << e.what() << '\n';
         return 1;
