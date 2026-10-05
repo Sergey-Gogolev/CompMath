@@ -13,7 +13,7 @@ class Interpolant{
     public:
         Interpolant(const std::array<X, N>& x, const std::array<Y, N>& y): x(x), y(y)
         {
-            std::array<Y, N> up = {};
+            std::array<Y, N> up;
             std::array<Y, N> down = y;
             for (std::size_t i = 0; i < N; i++)
             {
@@ -63,18 +63,18 @@ void Noise(std::array<Y, N>& y, Y amp){
 }
 
 int main() {
-    constexpr std::size_t n = 21;
+    constexpr std::size_t n = 8;
+    double h = 0.0625;
 
-    std::array<double, n> a = {};
-    for (std::size_t i = 0; i < n; i++){ a[i] = 0.2 * ((int)i - 10); }
+    std::array<double, n> a;
+    for (std::size_t i = 0; i < n; i++){ a[i] = h * ((int)i - (int)(n / 2)); }
 
-    std::array<double, n> b = {};
+    std::array<double, n> b;
     for (std::size_t i = 0; i < n; i++){ b[i] = func0(a[i]); }
-    Noise(b, 0.01);
+    
+    std::array<double, n> c;
     Interpolant<n, double, double> func(a, b);
-    std::array<double, n> c = func.getD();
-
-
+    
 
     std::cout << "\nNodes X: \n[";
     for (std::size_t i = 0; i < n; i++){
@@ -88,20 +88,25 @@ int main() {
     }        
     std::cout << "]\n";
 
-    Noise(a, 0.1);
+    Noise(a, h * .5);                                                      //чтобы точки не совпадали с изначальной сеткой
     std::cout << "\nTarget Nodes X: \n[";
     for (std::size_t i = 0; i < n; i++){
         std::cout << a[i] << ", ";
     }        
     std::cout << "]\n";
 
+    for (std::size_t i = 0; i < n; i++){ c[i] = func(a[i]); }
     std::cout << "\nInterpolated in Target Nodes Y: \n[";
     for (std::size_t i = 0; i < n; i++){
-        std::cout << func(a[i]) << ", ";
+        std::cout << c[i] << ", ";
     }        
     std::cout << "]\n";
 
-
+    std::cout << "\nInterpolation error: \n[";
+    for (std::size_t i = 0; i < n; i++){
+        std::cout << std::abs(func0(a[i]) - c[i]) << ", ";
+    }
+    std::cout << "]\n";
     return 0;
 }
 
