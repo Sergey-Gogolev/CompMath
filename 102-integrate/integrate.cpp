@@ -63,10 +63,16 @@ class Integrator{
 int main(){
     try{
         Integrator<double, double> g("weights.txt");
-        auto f = [](double x) {return std::pow(x, 5) - 2 * std::pow(x, 4) + 3 * std::pow(x, 3) - 4 * std::pow(x, 2) + 5 * x;; };
-        std::cout << "\nValue = " << g(f, -2.0, 2.0, 0.1) << '\n';
+        auto f = [](double x) {return std::asin(x); };
+        auto F = [](double x) {return x * std::asin(x) + std::pow(1 - x * x, 0.5); };
+        double v = g(f, -0.99, 0.5, 0.5);
+        std::cout << "\nValue = " << v << '\n' << "Error = " << std::abs(v - F(0.5) + F(-0.99)) << '\n';
     } catch (const std::exception& e){
         std::cerr << e.what() << '\n';
         return 1;
     }
 }
+
+
+// h = [0.5, 0.25, 0.125, 0.0625, 0.0625 / 2, 0.0625 / 4]
+// D = [2.6e-3, 7.2e-4, 1.7e-4, 3.3e-5, 4.7e-6, 4.93e-07]

@@ -1,8 +1,8 @@
 import numpy as np
 import sympy as sp
 
-n = 5
-digits = 32
+n = 2
+digits = 16
 x = sp.Symbol('x', real=True)
 polinoms = [sp.Integer(1), x]
 for i in range(1, n):
